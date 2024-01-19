@@ -1,1 +1,51 @@
+--Dataset: Beloved & Beyond Sales Record from 2019 to 2023
+--Source: AIESEC Heading For The Future: Data Analysis Competition 2023
+--Queried using Google BigQuery
+
+--Display customer demand of buying gifts by occasions
+SELECT occasion_name AS occasion, count(occasion_name) AS occasion_frequency
+FROM `h4tf-405709.bills_data.bills`
+JOIN `h4tf-405709.occasions_data.occasions`
+ON
+to_user_occasion_id = occasion_id
+GROUP BY occasion_name
+
+--Display customer demand of buying gifts by relationship with the receivers
+SELECT relationship_name AS relationship, count(relationship_name) AS relationship_frequency
+FROM `h4tf-405709.bills_data.bills`
+JOIN `h4tf-405709.relationships_data.relationships`
+ON
+to_user_relationship_id = relationship_id
+GROUP BY relationship_name
+
+--Display the number of repeated customers
+SELECT user_name, count(user_name) AS num_orders
+FROM `h4tf-405709.bills_data.bills`
+JOIN `h4tf-405709.users_data.users`
+ON 
+customer_id = user_id
+GROUP BY user_name
+HAVING COUNT(user_name) > 1
+
+--Display total revenue and total commission of each product
+SELECT product_name AS product, 
+COUNT(product_name) AS total_orders_by_product,
+SUM(_summary_grand_total_) AS grand_total_by_product,
+SUM(_summary_commission_) AS total_commission_by_product
+FROM `h4tf-405709.bills_data.bills`
+JOIN `h4tf-405709.products_data.products`
+ON
+master_id = product_id
+GROUP BY product_name
+
+--Determine the most profitable market
+SELECT 
+country_id AS country, 
+SUM(_summary_grand_total_) AS grand_total_by_country,
+SUM(_summary_commission_) AS total_commission_by_country
+FROM `h4tf-405709.bills_data.bills`
+GROUP BY country_id
+
+
+
 
